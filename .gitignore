@@ -1,0 +1,24 @@
+# python
+**/.env
+**/.env.bak
+**/venv/
+**/__pycache__/
+*.py[cod]
+*$py.class
+**/.ipynb_checkpoints
+
+# django
+*.log*
+**/local_settings.py
+**/db.sqlite3
+**/db.sqlite3-journal
+
+# typescript
+**/node_modules
+**/build/
+*.log*
+**/.env
+**/.env.bak
+
+# vscode
+.vscode/
