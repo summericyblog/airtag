@@ -33,9 +33,11 @@ def add_tagtree(tagtree):
 
 def gen_tagtree():
     def gen_tagtree_element(ancestor):
-        children = TagPath.objects.filter(ancestor__name=ancestor)
-        if children is None:
-            return None
+        children = TagPath.objects.filter(
+            ancestor__name=ancestor, pathlength=1
+        )
+        if not children:
+            return []
         else:
             ret = []
             for c in children:

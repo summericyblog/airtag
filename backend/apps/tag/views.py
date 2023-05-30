@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import yaml
 
+from .models import Tag, TagPath
 from .utils import add_tagtree, gen_tagtree
 
 
@@ -14,6 +15,7 @@ def tag_write_config(request):
     target = os.path.join(settings.PROJECT_DIR, "tagtree.yaml")
     tagdict = gen_tagtree()
     tagtree = yaml.dump(tagdict)
+    print(tagdict)
     with open(target, "w") as f:
         f.write(tagtree)
     response = Response("Success.", status=status.HTTP_200_OK)
@@ -26,5 +28,13 @@ def tag_read_config(request):
     with open(target, "r") as f:
         tagtree = yaml.load(f, Loader=yaml.SafeLoader)
     add_tagtree(tagtree)
+    response = Response("Success.", status=status.HTTP_200_OK)
+    return response
+
+
+@api_view(["GET"])
+def tag_clear(request):
+    TagPath.objects.all().delete()
+    Tag.objects.all().delete()
     response = Response("Success.", status=status.HTTP_200_OK)
     return response
