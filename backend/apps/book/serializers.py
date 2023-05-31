@@ -61,7 +61,8 @@ class BookSerializer(serializers.ModelSerializer):
         validated_data["authors"] = authors
         tags = []
         for tag_name in tags_list:
-            tag, _ = Author.objects.get_or_create(name=tag_name)
+            tag_filter = Tag.objects.filter(name=tag_name)
+
             tags.append(tag)
         validated_data["authors"] = authors
         validated_data["tags"] = tags

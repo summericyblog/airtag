@@ -7,7 +7,7 @@ from rest_framework.response import Response
 import yaml
 
 from .models import Tag, TagPath
-from .utils import add_tagtree, gen_tagtree
+from .utils import add_tagtree, gen_tagtree, add_one_tag, add_tag_str
 
 
 @api_view(["GET"])
@@ -41,16 +41,23 @@ def tag_clear(request):
 
 
 @api_view(["POST"])
-def get_or_add_tag(request):
-    name = request.data.get('name')
-    description = request.data.get('description')
-    father = request.data.get('father', None)
-    tag = Tag.objects.filter(name=name)
-    if tag.exists():
-        if father == None:
-            return (tag, "Existed.")
-        father_tag = TagPath.objects.get(descendant=tag, pathlength=1)
-        if father == father_tag.name:
-            return (tag, "Existed.")
+def tag_add(request):
+    name = request.data.get("name")
+    description = request.data.get("description")
+    father = request.data.get("father", None)
+    (message, code) = add_one_tag(name, description, father)
+    if code == 0 or code == 2:
+        return Response("Success.", status=status.HTTP_201_CREATED)
+    elif code == 2:
+        return Response("Existed.", status=status.HTTP_201_CREATED)
     else:
-        
+        return Response(
+            "Father incorrect.", status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["POST"])
+def tag_str_add(request):
+    tag_str = request.data.get("tagstr")
+    add_tag_str(tag_str)
+    return Response("Success.", status=status.HTTP_201_CREATED)
