@@ -38,3 +38,19 @@ def tag_clear(request):
     Tag.objects.all().delete()
     response = Response("Success.", status=status.HTTP_200_OK)
     return response
+
+
+@api_view(["POST"])
+def get_or_add_tag(request):
+    name = request.data.get('name')
+    description = request.data.get('description')
+    father = request.data.get('father', None)
+    tag = Tag.objects.filter(name=name)
+    if tag.exists():
+        if father == None:
+            return (tag, "Existed.")
+        father_tag = TagPath.objects.get(descendant=tag, pathlength=1)
+        if father == father_tag.name:
+            return (tag, "Existed.")
+    else:
+        
