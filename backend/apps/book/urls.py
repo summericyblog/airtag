@@ -1,16 +1,8 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import DefaultRouter
+from .views import AuthorViewSet, BookViewSet
 
-urlpatterns = [
-    path(
-        "",
-        views.tag_read_config,
-        name="tagpath-read-config",
-    ),
-    path(
-        "write-config",
-        views.tag_write_config,
-        name="tagpath-write-config",
-    ),
-    path("clear", views.tag_clear, name="tagpath-clear"),
-]
+router = DefaultRouter()
+router.register(r"authors", AuthorViewSet)
+router.register(r"books", BookViewSet)
+
+urlpatterns = router.urls

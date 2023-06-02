@@ -68,32 +68,42 @@ def add_one_tag(name, description, father):
         return ("Existed.", 1)
     else:
         if father is None:
-            tag = Tag(name=name, description=description, father=None)
+            tag = Tag(name=name, description=description)
             tag.save()
+            new_path = TagPath(
+                ancestor=None,
+                descendant=tag,
+                pathlength=1,
+            )
+            new_path.save()
             return ("Created.", 0)
         else:
-            father_tag = TagPath.objects.get(descendant=tag, pathlength=1)
-            if father_tag.name == father:
-                tag = Tag(
-                    name=name, description=description, father=father_tag
+            tag = Tag(name=name, description=description)
+            tag.save()
+            tag_father = Tag.objects.get(name=father)
+            ancestors = list(
+                TagPath.objects.filter(descendant=tag_father).values(
+                    "ancestor", "pathlength"
                 )
-                tag.save()
-                ancestors = list(
-                    TagPath.objects.filter(descendant=father).values(
-                        "ancestor", "pathlength"
+            )
+            if len(ancestors) == 0:
+                return ("Father not found", 2)
+            new_path = TagPath(
+                ancestor=tag_father,
+                descendant=tag,
+                pathlength=1,
+            )
+            new_path.save()
+            for a in ancestors:
+                if a["ancestor"] is not None:
+                    this_a_tag = Tag.objects.get(id=a["ancestor"])
+                    new_path = TagPath(
+                        ancestor=this_a_tag,
+                        descendant=tag,
+                        pathlength=a["pathlength"] + 1,
                     )
-                )
-                for a in ancestors:
-                    if a["ancestor"] != None:
-                        new_path = TagPath(
-                            ancestor=a["ancestor"],
-                            descendant=tag,
-                            pathlength=a["pathlength"] + 1,
-                        )
-                        new_path.save()
-                return ("Created.", 0)
-            else:
-                return ("Father incorrect.", 2)
+                    new_path.save()
+            return ("Created.", 0)
 
 
 def add_tag_str(tag_str):
@@ -105,3 +115,31 @@ def add_tag_str(tag_str):
         add_one_tag(t, "", father)
         father = t
     return 0
+
+
+def get_descendants(tag):
+    descendants_tag = TagPath.objects.filter(ancestor=tag)
+    descendants = []
+    for a in descendants_tag:
+        if a.ancestor is not None:
+            descendants.append(
+                {"name": a.descendant.name, "pk": a.descendant.pk}
+            )
+    return descendants
+
+
+def get_children(tag):
+    children_tag = TagPath.objects.filter(ancestor=tag, pathlength=1)
+    children = []
+    for c in children_tag:
+        children.append({"name": c.descendant.name, "pk": c.descendant.pk})
+    return children
+
+
+def merge_tags(tags, new_t):
+    ret = []
+    for t in tags:
+        if not TagPath.objects.filter(ancestor=t, descendant=new_t).exists():
+            ret.append(t)
+    ret.append(new_t)
+    return new_t

@@ -3,7 +3,10 @@ from django.db import models
 
 class Tag(models.Model):
     name = models.CharField(max_length=40)
-    description = models.TextField(blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class TagPath(models.Model):

@@ -1,0 +1,20 @@
+我现在使用typescript，react v6，material ui,我希望写一个完整的页面，实现以下功能：
+
+1. 页面包含两三部分，第一部分是一系列已经被选中的标签（badge）。第二部分是一系列没有被选中的标签（badge）。第三部分是一组card，用来显示信息。
+
+2. 页面初始状态没有标签被选中，向 127.0.0.1:8000/api/tagpath/tag-children 发送一个不带参数的post请求，这个请求会收到一个list作为回复，记作A。另一个list B初始时是空的。A和B中每一个元素都是一个dict，有两个键值，分别是name和pk。使用name作为标签的显示文字。在第一部分中B中的标签。在第二部分中A中的标签。
+
+3. 当某个标签（记作x）被选中之后，从A中删除这个标签，同时在B中加入这个标签。
+4. 向 127.0.0.1:8000/api/tagpath/tag-children 发送一个post请求，参数名是 tag，内容是这个标签的pk。返回值是一个list，将A和这个返回的list结合并用这个并集更新A，在第一部分中显示现在A的tag。
+5. 向 127.0.0.1:8000/api/tagpath/tag-merge 发送一个post命令，参数是 tags: B, new_t: x.pk。用返回的list代替B。在第一部分中显示B中的标签，这些标签被选中的状态。
+
+4. 当第一部分中的标签再次被点击的时候，从B中删除这个标签
+
+5. 每次标签状态变化之后，向 127.0.0.1:8000/api/book/books/filter_by_tags/ 发送一个post，参数是 tags: A. 返回值是一个list，每个元素是一个dict，包含的键值类似
+interface Book {
+  name: string;
+  authors: { name: string; url: string }[];
+}
+在页面的第二部分显示这些内容。
+
+6. 这应该是一个完整的页面。
