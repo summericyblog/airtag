@@ -118,7 +118,7 @@ def add_tag_str(tag_str):
 
 
 def get_descendants(tag):
-    descendants_tag = TagPath.objects.filter(ancestor=tag)
+    descendants_tag = TagPath.objects.filter(ancestor__id=tag["pk"])
     descendants = []
     for a in descendants_tag:
         if a.ancestor is not None:
@@ -129,7 +129,10 @@ def get_descendants(tag):
 
 
 def get_children(tag):
-    children_tag = TagPath.objects.filter(ancestor=tag, pathlength=1)
+    if tag is None:
+        children_tag = TagPath.objects.filter(ancestor=None, pathlength=1)
+    else:
+        children_tag = TagPath.objects.filter(ancestor=tag, pathlength=1)
     children = []
     for c in children_tag:
         children.append({"name": c.descendant.name, "pk": c.descendant.pk})
@@ -139,7 +142,10 @@ def get_children(tag):
 def merge_tags(tags, new_t):
     ret = []
     for t in tags:
-        if not TagPath.objects.filter(ancestor=t, descendant=new_t).exists():
+        if not TagPath.objects.filter(
+            ancestor__id=t["pk"], descendant__id=new_t
+        ).exists():
             ret.append(t)
-    ret.append(new_t)
-    return new_t
+    this_tag = {"name": Tag.objects.get(id=new_t).name, "pk": new_t}
+    ret.append(this_tag)
+    return ret

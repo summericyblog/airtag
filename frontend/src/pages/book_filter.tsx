@@ -20,7 +20,7 @@ export const fetchInitialTags = async (): Promise<Tag[]> => {
   return response.data;
 };
 
-export const fetchTagChildren = async (tag: string): Promise<Tag[]> => {
+export const fetchTagChildren = async (tag: Tag): Promise<Tag[]> => {
   const response = await axios.post<Tag[]>(
     'http://127.0.0.1:8000/api/tagpath/tag-children',
     { tag }
@@ -64,7 +64,7 @@ const MyPage = () => {
     const newSelectedTags = [...selectedTags, tag];
     setSelectedTags(newSelectedTags);
     setUnselectedTags(unselectedTags.filter((t) => t.pk !== tag.pk));
-    const children = await fetchTagChildren(tag.pk);
+    const children = await fetchTagChildren(tag);
     setUnselectedTags([...unselectedTags, ...children]);
     const merged = await mergeTags(newSelectedTags, tag.pk);
     setSelectedTags(merged);

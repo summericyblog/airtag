@@ -70,16 +70,16 @@ def tag_str_add(request):
 
 @api_view(["POST"])
 def tag_descendants(request):
-    tag = Tag.objects.get(pk=request.data.get("tag"))
+    tag = Tag.objects.get(id=request.data.get("tag"))
     ancestors = get_descendants(tag)
     return Response(ancestors, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
 def tag_children(request):
-    pk = request.data.get("tag", None)
-    if pk is not None:
-        tag = Tag.objects.get(pk=pk)
+    tag = request.data.get("tag", None)
+    if tag is not None:
+        tag = Tag.objects.get(id=tag["pk"])
     else:
         tag = None
     children = get_children(tag)

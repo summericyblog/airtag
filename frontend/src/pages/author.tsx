@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { back_url } from '../common/backurl';
 
 const AuthorDetailsPage = () => {
   const { pk } = useParams();
@@ -13,8 +14,8 @@ const AuthorDetailsPage = () => {
 
   const handleDeleteAuthor = async () => {
     try {
-      const response = await axios.delete(`/api/book/authors/${pk}`);
-      if (response.status === 200) {
+      const response = await axios.delete(back_url + `/api/book/authors/${pk}`);
+      if (response.status === 200 || response.status === 204) {
         console.log('Author deleted successfully!');
         navigate(`/authors`);
       } else {
@@ -28,7 +29,7 @@ const AuthorDetailsPage = () => {
   useEffect(() => {
     const fetchAuthor = async () => {
       try {
-        const response = await axios.get(`/api/book/authors/${pk}`);
+        const response = await axios.get(back_url + `/api/book/authors/${pk}`);
         const data = response.data;
         setAuthor(data);
       } catch (error) {
