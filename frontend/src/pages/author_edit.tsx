@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { back_url } from '../common/backurl';
+import { Container, Form, Button } from 'react-bootstrap';
 
 const AuthorEditPage: React.FC = () => {
   const { pk } = useParams<{ pk: string }>();
@@ -69,84 +70,65 @@ const AuthorEditPage: React.FC = () => {
   }
 
   return (
-    <div className="container">
+    <Container>
       <h4>Edit Author</h4>
-      <div className="mb-3">
-        <label htmlFor="name" className="form-label">
-          Name
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="fullName" className="form-label">
-          Full Name
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="fullName"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="chineseName" className="form-label">
-          Chinese Name
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="chineseName"
-          value={chineseName}
-          onChange={(e) => setChineseName(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="nation" className="form-label">
-          Nation
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="nation"
-          value={nation}
-          onChange={(e) => setNation(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="gender" className="form-label">
-          Gender
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="gender"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="born" className="form-label">
-          Born
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="born"
-          value={born}
-          onChange={(e) => setBorn(e.target.value)}
-        />
-      </div>
-      <button className="btn btn-primary" onClick={handleUpdateAuthor}>
-        Update
-      </button>
-    </div>
+      <Form>
+        <Form.Group className="mb-3" controlId="name">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="fullName">
+          <Form.Label>Full Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="chineseName">
+          <Form.Label>Chinese Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={chineseName}
+            onChange={(e) => setChineseName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="nation">
+          <Form.Label>Nation</Form.Label>
+          <Form.Control
+            type="text"
+            value={nation}
+            onChange={(e) => setNation(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="gender">
+          <Form.Label>Gender</Form.Label>
+          <Form.Select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}>
+            <option value="">Select</option>
+            <option value="M">M</option>
+            <option value="F">F</option>
+            <option value="O">O</option>
+          </Form.Select>
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="born">
+          <Form.Label>Born</Form.Label>
+          <Form.Control
+            type="text"
+            value={born}
+            onChange={(e) => setBorn(e.target.value)}
+          />
+        </Form.Group>
+        <Button variant="primary" onClick={handleUpdateAuthor}>
+          Update
+        </Button>
+      </Form>
+    </Container>
   );
 };
 

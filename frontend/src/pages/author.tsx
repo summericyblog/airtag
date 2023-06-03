@@ -51,28 +51,33 @@ const AuthorDetailsPage = () => {
   return (
     <div className="container">
       <h4>{author.name}</h4>
-      <p>Full Name: {author.name_full}</p>
-      <p>Chinese Name: {author.name_cn}</p>
-      <p>Nation: {author.nation}</p>
-      <p>Gender: {author.gender}</p>
-      <p>Born: {author.born}</p>
+      <div className="d-flex justify-content-between mb-3">
+        <button className="btn btn-primary" onClick={handleEditAuthor}>
+          Edit
+        </button>
+        <button className="btn btn-danger" onClick={handleDeleteAuthor}>
+          Delete
+        </button>
+      </div>
+      <p className="mb-2">Full Name: {author.name_full}</p>
+      <p className="mb-2">Chinese Name: {author.name_cn}</p>
+      <p className="mb-2">Nation: {author.nation}</p>
+      <p className="mb-2">Gender: {author.gender}</p>
+      <p className="mb-2">Born: {author.born}</p>
 
-      <h6>Books:</h6>
+      <h6 className="mt-4">Books:</h6>
       <ul className="list-group">
         {author.books.map((book: any, index: number) => (
           <li className="list-group-item" key={index}>
-            <a href={book.url} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`/books/${book.url}`}
+              target="_blank"
+              rel="noopener noreferrer">
               {book.name}
             </a>
           </li>
         ))}
       </ul>
-      <button className="btn btn-primary" onClick={handleEditAuthor}>
-        Edit
-      </button>
-      <button className="btn btn-danger" onClick={handleDeleteAuthor}>
-        Delete
-      </button>
     </div>
   );
 };

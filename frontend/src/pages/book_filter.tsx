@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Badge } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
+import { back_url } from '../common/backurl';
 
 interface Tag {
   name: string;
@@ -15,15 +16,18 @@ interface Book {
 
 export const fetchInitialTags = async (): Promise<Tag[]> => {
   const response = await axios.post<Tag[]>(
-    'http://127.0.0.1:8000/api/tagpath/tag-children'
+    back_url + 'api/tagpath/tag-children'
   );
   return response.data;
 };
 
-export const fetchTagChildren = async (tag: Tag): Promise<Tag[]> => {
+export const fetchTagChildren = async (
+  tags: Tag[],
+  new_t?: Tag
+): Promise<Tag[]> => {
   const response = await axios.post<Tag[]>(
-    'http://127.0.0.1:8000/api/tagpath/tag-children',
-    { tag }
+    back_url + 'api/tagpath/tag-children',
+    { tags, new_t }
   );
   return response.data;
 };
@@ -32,16 +36,15 @@ export const mergeTags = async (
   tags: Tag[],
   newTag: string
 ): Promise<Tag[]> => {
-  const response = await axios.post<Tag[]>(
-    'http://127.0.0.1:8000/api/tagpath/tag-merge',
-    { tags, new_t: newTag }
-  );
+  const response = await axios.post<Tag[]>(back_url + 'api/tagpath/tag-merge', {
+    tags,
+  });
   return response.data;
 };
 
 export const fetchBooks = async (tags: Tag[]): Promise<Book[]> => {
   const response = await axios.post<Book[]>(
-    'http://127.0.0.1:8000/api/book/books/filter_by_tags/',
+    back_url + 'api/book/books/filter_by_tags/',
     { tags }
   );
   return response.data;
@@ -60,31 +63,55 @@ const MyPage = () => {
     fetchTags();
   }, []);
 
+  useEffect(() => {
+    const updateData = async () => {
+      await fetchBooks(selectedTags)
+        .then((result) => setBooks(result))
+        .catch((error) => console.error(error));
+    };
+
+    updateData();
+  }, [selectedTags]);
+
   const selectTag = async (tag: Tag) => {
-    const newSelectedTags = [...selectedTags, tag];
-    setSelectedTags(newSelectedTags);
-    setUnselectedTags(unselectedTags.filter((t) => t.pk !== tag.pk));
-    const children = await fetchTagChildren(tag);
-    setUnselectedTags([...unselectedTags, ...children]);
-    const merged = await mergeTags(newSelectedTags, tag.pk);
+    const updatedSelectedTags = [...selectedTags, tag];
+    setSelectedTags(updatedSelectedTags);
+
+    const updatedUnselectedTags = unselectedTags.filter((t) => t.pk !== tag.pk);
+    setUnselectedTags(updatedUnselectedTags);
+
+    const merged = await mergeTags(updatedSelectedTags, tag.pk);
     setSelectedTags(merged);
-    updateBooks(newSelectedTags);
+
+    const updatedUnselected = await fetchTagChildren(merged, tag);
+    setUnselectedTags(updatedUnselected);
+
+    const updatedBooks = await fetchBooks(merged);
+    setBooks(updatedBooks);
   };
 
-  const deselectTag = (tag: Tag) => {
-    const newSelectedTags = selectedTags.filter((t) => t.pk !== tag.pk);
-    setSelectedTags(newSelectedTags);
-    updateBooks(newSelectedTags);
-  };
+  const deselectTag = async (tag?: Tag) => {
+    const updatedSelectedTags = selectedTags.filter((t) => t.pk !== tag?.pk);
+    setSelectedTags(updatedSelectedTags);
 
-  const updateBooks = async (tags: Tag[]) => {
-    const books = await fetchBooks(tags);
-    setBooks(books);
+    const updatedUnselectedTags = tag
+      ? [...unselectedTags, tag]
+      : unselectedTags;
+    setUnselectedTags(updatedUnselectedTags);
+
+    const merged = await mergeTags(updatedSelectedTags, tag?.pk || '');
+    setSelectedTags(merged);
+
+    const updatedUnselected = await fetchTagChildren(merged);
+    setUnselectedTags(updatedUnselected);
+
+    const updatedBooks = await fetchBooks(merged);
+    setBooks(updatedBooks);
   };
 
   return (
     <div>
-      <p>1111111111111111111111</p>
+      <p>Tags Selected</p>
       <div>
         {selectedTags.map((tag) => (
           <Badge key={tag.pk} onClick={() => deselectTag(tag)}>
@@ -92,7 +119,7 @@ const MyPage = () => {
           </Badge>
         ))}
       </div>
-      <p>22222222222222222222222</p>
+      <p>Tags Unselected</p>
       <div>
         {unselectedTags.map((tag) => (
           <Badge key={tag.pk} onClick={() => selectTag(tag)}>
@@ -100,7 +127,7 @@ const MyPage = () => {
           </Badge>
         ))}
       </div>
-      <p>3333333333333333333333</p>
+      <p>Filter list</p>
       <div>
         {books.map((book) => (
           <Card key={book.name}>

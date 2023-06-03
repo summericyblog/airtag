@@ -125,27 +125,42 @@ def get_descendants(tag):
             descendants.append(
                 {"name": a.descendant.name, "pk": a.descendant.pk}
             )
+    descendants = list({item["pk"]: item for item in descendants}.values())
     return descendants
 
 
-def get_children(tag):
-    if tag is None:
-        children_tag = TagPath.objects.filter(ancestor=None, pathlength=1)
-    else:
-        children_tag = TagPath.objects.filter(ancestor=tag, pathlength=1)
+def get_children(tags, new_t):
     children = []
+    children_tag = TagPath.objects.filter(ancestor=None, pathlength=1)
     for c in children_tag:
         children.append({"name": c.descendant.name, "pk": c.descendant.pk})
+    for t in tags:
+        children_tag = TagPath.objects.filter(
+            ancestor__id=t["pk"], pathlength=1
+        )
+        for c in children_tag:
+            children.append({"name": c.descendant.name, "pk": c.descendant.pk})
+    if new_t is not None:
+        children_tag = TagPath.objects.filter(
+            ancestor__id=new_t["pk"], pathlength=1
+        )
+        for c in children_tag:
+            children.append({"name": c.descendant.name, "pk": c.descendant.pk})
+    children = list({item["pk"]: item for item in children}.values())
     return children
 
 
-def merge_tags(tags, new_t):
+def merge_tags(tags):
     ret = []
     for t in tags:
-        if not TagPath.objects.filter(
-            ancestor__id=t["pk"], descendant__id=new_t
-        ).exists():
+        add = True
+        for r in tags:
+            if TagPath.objects.filter(
+                ancestor__id=t["pk"], descendant__id=r["pk"]
+            ).exists():
+                add = False
+                break
+        if add:
             ret.append(t)
-    this_tag = {"name": Tag.objects.get(id=new_t).name, "pk": new_t}
-    ret.append(this_tag)
+    ret = list({item["pk"]: item for item in ret}.values())
     return ret

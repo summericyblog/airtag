@@ -30,14 +30,10 @@ const AuthorList: React.FC = () => {
       {authors.map((author) => (
         <li key={author.url} className="list-group-item">
           <div className="d-flex align-items-center">
-            {/* <img
-              src={author.image_url}
-              alt={author.name}
-              className="rounded-circle me-3"
-              style={{ width: '50px', height: '50px' }}
-            /> */}
             <div>
-              <h5 className="mb-1">{author.name}</h5>
+              <h5 className="mb-1">
+                <a href={`/authors/${author.url}`}>{author.name}</a>
+              </h5>
               <p className="mb-0">{author.url}</p>
             </div>
           </div>

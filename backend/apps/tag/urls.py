@@ -21,5 +21,5 @@ urlpatterns = [
         name="tagpath-tag-descendants",
     ),
     path("tag-children", views.tag_children, name="tagpath-tag-children"),
-    path("tag-merge", views.merge_tags, name="tagpath-tag-merge"),
+    path("tag-merge", views.tag_merge, name="tagpath-tag-merge"),
 ]

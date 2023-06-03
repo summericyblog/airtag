@@ -77,18 +77,15 @@ def tag_descendants(request):
 
 @api_view(["POST"])
 def tag_children(request):
-    tag = request.data.get("tag", None)
-    if tag is not None:
-        tag = Tag.objects.get(id=tag["pk"])
-    else:
-        tag = None
-    children = get_children(tag)
+    tags = request.data.get("tags", [])
+    new_t = request.data.get("new_t", None)
+    children = get_children(tags, new_t)
+    print(children)
     return Response(children, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
 def tag_merge(request):
     tags = request.data.get("tags", [])
-    new_t = request.data.get("new_t")
-    ret = merge_tags(tags, new_t)
+    ret = merge_tags(tags)
     return Response(ret, status=status.HTTP_200_OK)
